@@ -91,44 +91,44 @@ class algo{
     }
 
 
-    void rr(int n,int ct[],int tat[],int wt[],int qunt){
-        int remaining=n;
-        int rem[n];
-        int current_time=0;
-        for(int i=0;i<n;i++){
-            rem[i]=p[i].bt;
+    void rr(int n, int ct[], int tat[], int wt[], int quantum) {
+        int remaining_processes = n;
+        int current_time = 0;
+        int *remaining_time = new int[n];
+
+        for (int i = 0; i < n; i++) {
+        remaining_time[i] = p[i].bt;
         }
-        while (remaining>0){
-            int done=1;
-            for(int i=0;i<n;i++){
-                if(p[i].at<=current_time&&rem[i]>0){
-                    done=0;
-                    if(qunt<rem[i]){
-                        current_time+=qunt;
-                        rem[i]-=qunt;
-                    }
-                    else{
-                        current_time=rem[i];
-                        remaining--;
-                        rem[i]=0;
-                        ct[i]=current_time;
-                        tat[i]=ct[i]-p[i].at;
-                        wt[i]=tat[i]-p[i].bt;
-                    }
 
-                }
+        while (remaining_processes > 0) {
+        bool done = true;
+
+        for (int i = 0; i < n; i++) {
+            if (p[i].at <= current_time && remaining_time[i] > 0) {
+
+            done = false; // There is still a pending process
+
+            if (remaining_time[i] > quantum) {
+                current_time += quantum;
+                remaining_time[i] -= quantum;
+            } 
+            else {
+                current_time += remaining_time[i];
+                ct[i] = current_time;
+                tat[i] = ct[i] - p[i].at;
+                wt[i] = tat[i] - p[i].bt;
+                remaining_processes--;
+                remaining_time[i] = 0;
             }
-            if(done){
-                current_time++;
             }
-            
         }
-        
 
-
-    }
-
-
+        if (done) {
+            current_time++; // No pending process, move to the next time unit
+        }
+        }
+        delete[] remaining_time;
+  }
 
 
 
